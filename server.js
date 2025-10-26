@@ -9,10 +9,10 @@ connectDB();
 
 const app = express();
 
-// Single CORS setup
+// ✅ CORS setup: allow only local dev and deployed frontend
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ["https://task-managers-6not.onrender.com"] // deployed frontend
-  : ["http://localhost:5173", "https://task-managers-6not.onrender.com"]; // dev + deployed
+  ? ["https://task-managers-6not.onrender.com"] // production frontend
+  : ["http://localhost:5173", "https://task-managers-6not.onrender.com"]; // dev + prod
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -28,12 +28,17 @@ app.use(cors({
 
 app.use(express.json());
 
-// Routes
+// ✅ Routes
 app.use('/api/tasks', taskRoutes);
 
-// Default route
+// ✅ Default root route (just info, not used by frontend)
 app.get('/', (req, res) => {
   res.send('Task API Server is running...');
+});
+
+// ✅ 404 handler for other undefined routes
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 // Start server
