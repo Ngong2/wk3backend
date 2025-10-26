@@ -9,10 +9,10 @@ connectDB();
 
 const app = express();
 
-// ✅ CORS setup
+// CORS
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? [process.env.ALLOWED_ORIGIN] // production frontend
-  : ["http://localhost:5173", process.env.ALLOWED_ORIGIN]; // dev + prod
+  ? [process.env.ALLOWED_ORIGIN]
+  : ["http://localhost:5173", process.env.ALLOWED_ORIGIN];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -28,18 +28,14 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ Task routes
+// Routes
 app.use('/api/tasks', taskRoutes);
 
-// ✅ Root route returns JSON
-app.get('/', (req, res) => {
-  res.json({ message: "Task API Server is running" });
-});
+// Root route
+app.get('/', (req, res) => res.json({ message: "Task API Server is running" }));
 
-// ✅ 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
+// 404 handler
+app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 
 // Start server
 const PORT = process.env.PORT || 5000;
