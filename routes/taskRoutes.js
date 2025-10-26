@@ -16,7 +16,8 @@ router.get("/", async (req, res) => {
 // Create a new task
 router.post("/", async (req, res) => {
   try {
-    const { title, description } = req.body; // ✅ include description
+    const { title, description } = req.body;
+    if (!title) return res.status(400).json({ message: "Title is required" });
     const newTask = await Task.create({ title, description });
     res.status(201).json(newTask);
   } catch (error) {
@@ -27,7 +28,7 @@ router.post("/", async (req, res) => {
 // Update a task
 router.put("/:id", async (req, res) => {
   try {
-    const { title, description, completed } = req.body; // ✅ include description
+    const { title, description, completed } = req.body;
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
       { title, description, completed },
