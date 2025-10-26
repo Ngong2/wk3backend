@@ -9,33 +9,42 @@ connectDB();
 
 const app = express();
 
-// CORS
+// ✅ CORS setup: localhost for dev, deployed frontend for production
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? [process.env.ALLOWED_ORIGIN]
-  : ["http://localhost:5173", process.env.ALLOWED_ORIGIN];
+  ? ["https://task-managers-6not.onrender.com"]
+  : ["http://localhost:5173"];
 
+// CORS middleware
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    // allow requests with no origin (curl, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS"));
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"]
 }));
 
+// Body parser
 app.use(express.json());
 
-// Routes
+// ✅ Task routes
 app.use('/api/tasks', taskRoutes);
 
 // Root route
-app.get('/', (req, res) => res.json({ message: "Task API Server is running" }));
+app.get('/', (req, res) => {
+  res.json({ message: "Task API Server is running" });
+});
 
 // 404 handler
-app.use((req, res) => res.status(404).json({ message: "Route not found" }));
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
